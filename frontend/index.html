@@ -6,7 +6,7 @@
 <title>Budget Web v1</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{--bg:#f7f6f2;--surface:#fff;--surface2:#f2f0ea;--text:#23211d;--muted:#666;--primary:#0f6b72;--danger:#a53d4b;--success:#3c7a2a;--warn:#b07000;--border:#ddd;--radius:16px;--shadow:0 8px 24px rgba(0,0,0,.07);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#faf9f6,var(--bg));color:var(--text)}header{position:sticky;top:0;background:rgba(247,246,242,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);z-index:10}.wrap{max-width:1400px;margin:0 auto;padding:16px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}.muted{color:var(--muted);font-size:.92rem}.val{font-size:1.8rem;font-weight:800}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.btn,input,select,textarea{font:inherit;border-radius:12px;border:1px solid var(--border);padding:10px 14px;background:var(--surface)}.btn{cursor:pointer;background:var(--surface2)}.btn.primary{background:var(--primary);color:#fff;border-color:transparent}.btn.danger{background:#fff;color:var(--danger);border-color:#e2b5bb}.btn.warn{background:#fff;color:var(--warn);border-color:#e8d09a}main{display:grid;gap:16px;padding-bottom:24px}.two{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:10px;border-bottom:1px solid var(--border);text-align:left;font-size:.95rem}.pill{padding:4px 10px;border-radius:999px;background:var(--surface2);font-size:.8rem}.pill.planned{background:#fff8e1;color:var(--warn);border:1px solid #ffe082}.pill.income{background:#e8f5e9;color:var(--success)}.pill.expense{background:#fce4ec;color:var(--danger)}.list{display:grid;gap:10px}.small{font-size:.85rem;color:var(--muted)}.nav{display:flex;gap:10px;flex-wrap:wrap}.section{display:none}.section.active{display:block}.chart-wrap{position:relative;height:260px;width:100%}.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}.bar-track{flex:1;background:var(--surface2);border-radius:8px;height:10px;overflow:hidden}.bar-fill{height:100%;border-radius:8px;background:var(--primary);transition:width .4s}.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.78rem;font-weight:600}@media(max-width:1000px){.grid,.two{grid-template-columns:1fr}}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}}
+:root{--bg:#f7f6f2;--surface:#fff;--surface2:#f2f0ea;--text:#23211d;--muted:#666;--primary:#0f6b72;--danger:#a53d4b;--success:#3c7a2a;--warn:#b07000;--border:#ddd;--radius:16px;--shadow:0 8px 24px rgba(0,0,0,.07);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#faf9f6,var(--bg));color:var(--text)}header{position:sticky;top:0;background:rgba(247,246,242,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);z-index:10}.wrap{max-width:1400px;margin:0 auto;padding:16px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}.muted{color:var(--muted);font-size:.92rem}.val{font-size:1.8rem;font-weight:800}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.btn,input,select,textarea{font:inherit;border-radius:12px;border:1px solid var(--border);padding:10px 14px;background:var(--surface)}.btn{cursor:pointer;background:var(--surface2)}.btn.primary{background:var(--primary);color:#fff;border-color:transparent}.btn.danger{background:#fff;color:var(--danger);border-color:#e2b5bb}.btn.warn{background:#fff;color:var(--warn);border-color:#e8d09a}main{display:grid;gap:16px;padding-bottom:24px}.two{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:10px;border-bottom:1px solid var(--border);text-align:left;font-size:.95rem}.pill{padding:4px 10px;border-radius:999px;background:var(--surface2);font-size:.8rem}.pill.planned{background:#fff8e1;color:var(--warn);border:1px solid #ffe082}.pill.income{background:#e8f5e9;color:var(--success)}.pill.expense{background:#fce4ec;color:var(--danger)}.list{display:grid;gap:10px}.small{font-size:.85rem;color:var(--muted)}.nav{display:flex;gap:10px;flex-wrap:wrap}.section{display:none}.section.active{display:block}.chart-wrap{position:relative;height:260px;width:100%}.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}.bar-track{flex:1;background:var(--surface2);border-radius:8px;height:10px;overflow:hidden}.bar-fill{height:100%;border-radius:8px;background:var(--primary);transition:width .4s}.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.78rem;font-weight:600}.block-header{background:var(--surface2);padding:8px 14px;border-radius:10px;font-weight:700;font-size:.9rem;margin-top:10px}.select-inline{font:inherit;border:1px solid var(--border);border-radius:8px;padding:4px 8px;background:var(--surface);font-size:.85rem;cursor:pointer}@media(max-width:1000px){.grid,.two{grid-template-columns:1fr}}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -93,20 +93,12 @@
         </div>
         <div class="card">
           <h3 style="margin-top:0">Filtrar</h3>
-          <div class="row">
-            <select id="catFilterType"><option value="all">Todas</option><option value="expense">Gastos</option><option value="income">Ingresos</option></select>
-          </div>
+          <select id="catFilterType"><option value="all">Todas</option><option value="expense">Gastos</option><option value="income">Ingresos</option></select>
         </div>
       </div>
       <div class="two" style="margin-top:16px">
-        <div class="card">
-          <h3 style="margin-top:0">Gastos <span class="tag" style="background:#fce4ec;color:var(--danger)">expense</span></h3>
-          <div id="catListExpense" class="list"></div>
-        </div>
-        <div class="card">
-          <h3 style="margin-top:0">Ingresos <span class="tag" style="background:#e8f5e9;color:var(--success)">income</span></h3>
-          <div id="catListIncome" class="list"></div>
-        </div>
+        <div class="card"><h3 style="margin-top:0">Gastos <span class="tag" style="background:#fce4ec;color:var(--danger)">expense</span></h3><div id="catListExpense" class="list"></div></div>
+        <div class="card"><h3 style="margin-top:0">Ingresos <span class="tag" style="background:#e8f5e9;color:var(--success)">income</span></h3><div id="catListIncome" class="list"></div></div>
       </div>
     </section>
 
@@ -173,10 +165,10 @@
           <h3 style="margin-top:0">📅 Planificar el mes</h3>
           <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px">
             <div><div class="small">Ingresos esperados</div><input id="pl_income" type="number" step="0.01" placeholder="Ej: 2000"></div>
-            <div><div class="small">Objetivo de ahorro</div><input id="pl_savings" type="number" step="0.01" placeholder="Ej: 300"></div>
+            <div><div class="small">Objetivo de ahorro (vacío = 20%)</div><input id="pl_savings" type="number" step="0.01" placeholder="Ej: 300"></div>
           </div>
           <div style="margin-top:12px">
-            <div class="small" style="margin-bottom:6px">Gastos fijos adicionales (opcional)</div>
+            <div class="small" style="margin-bottom:6px">Gastos fijos — se mostrarán con importe exacto en bloque Necesidades</div>
             <div id="fixedExpensesList" class="list"></div>
             <div class="row" style="margin-top:8px">
               <input id="pl_fixed_cat" placeholder="Categoría" style="flex:1">
@@ -185,7 +177,7 @@
             </div>
           </div>
           <div style="margin-top:12px">
-            <div class="small" style="margin-bottom:6px">Categorías variables a distribuir (opcional, deja vacío para auto)</div>
+            <div class="small" style="margin-bottom:6px">Categorías variables extra (opcional, deja vacío para auto)</div>
             <input id="pl_variable_cats" placeholder="Ocio, Ropa, Restaurantes..." style="width:100%">
           </div>
           <div class="row" style="margin-top:14px">
@@ -194,7 +186,7 @@
           </div>
         </div>
         <div class="card">
-          <h3 style="margin-top:0">Resumen del plan</h3>
+          <h3 style="margin-top:0">Resumen 50/30/20</h3>
           <div id="plannerSummary" class="list"></div>
         </div>
       </div>
@@ -212,7 +204,7 @@
           <div class="list">
             <div class="pill">API: <span id="apiStatus">-</span></div>
             <div class="pill">Mes activo: <span id="activeMonth">-</span></div>
-            <div class="pill">Backend: FastAPI v0.4</div>
+            <div class="pill">Backend: FastAPI v0.6</div>
             <div class="pill">DB: PostgreSQL</div>
           </div>
         </div>
@@ -268,6 +260,24 @@ function renderCatBars(byCat){
     <div style="font-size:.85rem;min-width:60px;text-align:right">${fmt(v)}</div></div>`).join('')||'<div class="muted">Sin datos</div>';
 }
 
+// ── Edición inline de categoría ──────────────────────────────
+async function updateTxCategory(txId, catId){
+  await api(`/transactions/${txId}/category`,{
+    method:'PATCH',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({category_id:catId?Number(catId):null})
+  });
+  // Actualizar local sin reload completo
+  const tx=txs.find(t=>t.id===txId);
+  if(tx) tx.category_id=catId?Number(catId):null;
+}
+
+function buildCatSelect(txId, currentCatId, txType){
+  const cats=categories.filter(c=>c.type===txType);
+  const opts=`<option value="">— Sin categoría —</option>`+cats.map(c=>`<option value="${c.id}" ${c.id===currentCatId?'selected':''}>${c.name}</option>`).join('');
+  return `<select class="select-inline" data-txcat="${txId}">${opts}</select>`;
+}
+
 function renderTxs(){
   const q=qs('#search').value.trim().toLowerCase();
   const ft=qs('#filterType').value;
@@ -277,11 +287,13 @@ function renderTxs(){
     (!q||t.description.toLowerCase().includes(q))&&
     (showPl||!t.planned)
   );
-  const catMap=Object.fromEntries(categories.map(c=>[c.id,c.name]));
-  qs('#txTable').innerHTML=rows.map(t=>`<tr style="${t.planned?'opacity:.7;background:#fffde7':''}"><td><input type="checkbox" ${selected.has(t.id)?'checked':''} data-id="${t.id}"></td><td>${t.tx_date}</td><td>${t.description}</td><td><span class="pill ${t.type}">${t.type==='income'?'Ingreso':'Gasto'}</span></td><td>${catMap[t.category_id]||'—'}</td><td>${fmt(t.amount)}</td><td>${t.planned?'<span class="pill planned">Planificado</span>':'<span class="pill" style="background:#e8f5e9;color:var(--success)">Efectivo</span>'}</td><td><button class="btn danger" style="padding:4px 10px" data-del="${t.id}">&#x2715;</button></td></tr>`).join('')||
+  qs('#txTable').innerHTML=rows.map(t=>`<tr style="${t.planned?'opacity:.7;background:#fffde7':''}"><td><input type="checkbox" ${selected.has(t.id)?'checked':''} data-id="${t.id}"></td><td>${t.tx_date}</td><td>${t.description}</td><td><span class="pill ${t.type}">${t.type==='income'?'Ingreso':'Gasto'}</span></td><td>${buildCatSelect(t.id,t.category_id,t.type)}</td><td>${fmt(t.amount)}</td><td>${t.planned?'<span class="pill planned">Planificado</span>':'<span class="pill" style="background:#e8f5e9;color:var(--success)">Efectivo</span>'}</td><td><button class="btn danger" style="padding:4px 10px" data-del="${t.id}">&#x2715;</button></td></tr>`).join('')||
     '<tr><td colspan="8" class="muted" style="padding:20px">Sin movimientos este mes</td></tr>';
   qsa('[data-id]').forEach(el=>el.onchange=e=>e.target.checked?selected.add(+e.target.dataset.id):selected.delete(+e.target.dataset.id));
   qsa('[data-del]').forEach(el=>el.onclick=()=>deleteTx(+el.dataset.del));
+  qsa('[data-txcat]').forEach(el=>el.onchange=async e=>{
+    await updateTxCategory(+e.target.dataset.txcat, e.target.value||null);
+  });
 }
 
 function fillCategorySelect(){
@@ -372,7 +384,7 @@ qs('#confirmPlanned').onclick=async()=>{
 qs('#previewBtn').onclick=async()=>{const f=qs('#csvFile').files[0];if(!f)return alert('Selecciona un CSV');const fd=new FormData();fd.append('file',f);const r=await fetch(`${API}/imports/preview`,{method:'POST',body:fd,headers:{'X-Demo-User':qs('#user').value||'demo@local'}});const j=await r.json();qs('#csvPreview').textContent=JSON.stringify(j,null,2);};
 qs('#importBtn').onclick=async()=>{const f=qs('#csvFile').files[0];if(!f)return alert('Selecciona un CSV');const fd=new FormData();fd.append('file',f);const r=await fetch(`${API}/imports/csv`,{method:'POST',body:fd,headers:{'X-Demo-User':qs('#user').value||'demo@local'}});const j=await r.json();qs('#importStatus').textContent=`✓ Insertados: ${j.rows_inserted} · Omitidos: ${j.rows_skipped} · Reglas: ${j.rules_applied||0}`;if(qs('#autoRules').checked)await api(`/imports/csv/apply-rules?month=${qs('#month').value}`,{method:'POST'});await loadAll();};
 
-// PLANNER
+// ── PLANNER ──────────────────────────────────────────────────
 qs('#addFixed').onclick=()=>{
   const cat=qs('#pl_fixed_cat').value.trim();const amt=Number(qs('#pl_fixed_amt').value);
   if(!cat||!amt)return;
@@ -381,8 +393,9 @@ qs('#addFixed').onclick=()=>{
   renderFixed();
 };
 function renderFixed(){
-  qs('#fixedExpensesList').innerHTML=fixedExpenses.map((f,i)=>`<div class="row" style="justify-content:space-between"><span>${f.category}: ${fmt(f.amount)}</span><button class="btn danger" style="padding:2px 8px" onclick="fixedExpenses.splice(${i},1);renderFixed()">&#x2715;</button></div>`).join('');
+  qs('#fixedExpensesList').innerHTML=fixedExpenses.map((f,i)=>`<div class="row" style="justify-content:space-between"><span>${f.category}: <strong>${fmt(f.amount)}</strong></span><button class="btn danger" style="padding:2px 8px" onclick="fixedExpenses.splice(${i},1);renderFixed()">&#x2715;</button></div>`).join('');
 }
+
 qs('#runPlanner').onclick=async()=>{
   const income=Number(qs('#pl_income').value);
   if(!income)return alert('Introduce los ingresos esperados');
@@ -390,17 +403,63 @@ qs('#runPlanner').onclick=async()=>{
   const varCats=qs('#pl_variable_cats').value.split(',').map(s=>s.trim()).filter(Boolean);
   const payload={expected_income:income,savings_goal:savings,fixed_expenses:fixedExpenses,variable_categories:varCats};
   const res=await api('/planner',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+
+  // ── Resumen lateral ──
+  const savingsColor=res.savings_pct>=20?'var(--success)':'var(--warn)';
   qs('#plannerSummary').innerHTML=`
-    <div class="card" style="padding:12px"><div class="muted">Ingresos esperados</div><strong>${fmt(res.expected_income)}</strong></div>
-    <div class="card" style="padding:12px"><div class="muted">Gastos fijos estimados</div><strong>${fmt(res.total_fixed)}</strong></div>
-    <div class="card" style="padding:12px"><div class="muted">Objetivo de ahorro</div><strong>${fmt(res.savings_goal)}</strong></div>
-    <div class="card" style="padding:12px;border:2px solid var(--primary)"><div class="muted">Disponible para variables</div><strong style="color:var(--primary)">${fmt(res.available_for_variable)}</strong></div>
+    <div class="card" style="padding:12px">
+      <div class="muted">Ingresos esperados</div>
+      <strong style="font-size:1.3rem">${fmt(res.expected_income)}</strong>
+    </div>
+    <div class="block-header" style="background:#fce4ec;color:var(--danger)">🏠 Necesidades — ${res.needs_pct}% = ${fmt(res.needs_budget)}</div>
+    <div class="card" style="padding:10px 14px">
+      <div class="muted">Total sugerido necesidades</div>
+      <strong>${fmt(res.total_needs_suggested)}</strong>
+    </div>
+    <div class="block-header" style="background:#e3f2fd;color:#1565c0">🎯 Deseos — ${res.wants_pct}% = ${fmt(res.wants_budget)}</div>
+    <div class="card" style="padding:10px 14px">
+      <div class="muted">Total sugerido deseos</div>
+      <strong>${fmt(res.total_wants_suggested)}</strong>
+    </div>
+    <div class="block-header" style="background:#e8f5e9;color:var(--success)">💰 Ahorro — ${res.savings_pct}% = ${fmt(res.savings_goal)}</div>
+    ${!res.has_history?'<div class="small" style="color:var(--warn);margin-top:6px">⚠️ Sin historial: distribución equitativa dentro de cada bloque</div>':''}
   `;
-  const max=Math.max(...res.items.map(i=>i.suggested),1);
-  qs('#plannerResult').innerHTML=`<table class="table"><thead><tr><th>Categoría</th><th>Tipo</th><th>Importe sugerido</th><th>Distribución</th></tr></thead><tbody>${
-    res.items.map(i=>`<tr><td>${i.category}</td><td><span class="tag" style="background:${i.type==='fixed'?'#fce4ec':'#e3f2fd'};color:${i.type==='fixed'?'var(--danger)':'#1565c0'}">${i.type==='fixed'?'Fijo':'Variable'}</span></td><td>${fmt(i.suggested)}</td><td><div class="bar-track" style="width:180px"><div class="bar-fill" style="width:${Math.round(i.suggested/max*100)}%;background:${i.type==='fixed'?'var(--danger)':'var(--primary)'}"></div></div></td></tr>`).join('')
-  }</tbody></table>`;
+
+  // ── Tabla resultado agrupada por bloque ──
+  const needs=res.items.filter(i=>i.block==='needs');
+  const wants=res.items.filter(i=>i.block==='wants');
+  const maxVal=Math.max(...res.items.map(i=>i.suggested),1);
+
+  function renderBlock(items, label, color, textColor){
+    if(!items.length) return '';
+    const rows=items.map(i=>{
+      const isManual=i.source==='manual';
+      return `<tr>
+        <td>${i.category}</td>
+        <td><span class="tag" style="background:${isManual?'#fff3e0':'#f3f3f3'};color:${isManual?'#e65100':'#555'}">${isManual?'Fijo manual':'Histórico'}</span></td>
+        <td><strong>${fmt(i.suggested)}</strong></td>
+        <td style="font-size:.82rem;color:var(--muted)">${i.pct_of_income}% ingresos</td>
+        <td><div class="bar-track" style="width:140px"><div class="bar-fill" style="width:${Math.round(i.suggested/maxVal*100)}%;background:${color}"></div></div></td>
+      </tr>`;
+    }).join('');
+    return `
+      <tr><td colspan="5" style="padding:0"><div class="block-header" style="background:${color}22;color:${textColor}">${label}</div></td></tr>
+      ${rows}
+    `;
+  }
+
+  qs('#plannerResult').innerHTML=`
+    <table class="table">
+      <thead><tr><th>Categoría</th><th>Origen</th><th>Importe</th><th>% ingreso</th><th>Distribución</th></tr></thead>
+      <tbody>
+        ${renderBlock(needs,'🏠 Necesidades (50%)','#a53d4b','var(--danger)')}
+        ${renderBlock(wants,'🎯 Deseos (30%)','#1565c0','#1565c0')}
+      </tbody>
+    </table>
+    <div style="margin-top:10px;padding:12px;background:#e8f5e9;border-radius:12px;color:var(--success);font-weight:600">💰 Ahorro reservado: ${fmt(res.savings_goal)} (${res.savings_pct}%)</div>
+  `;
 };
+
 qs('#clearPlanner').onclick=()=>{fixedExpenses=[];renderFixed();qs('#pl_income').value='';qs('#pl_savings').value='';qs('#pl_variable_cats').value='';qs('#plannerSummary').innerHTML='';qs('#plannerResult').innerHTML='';qs('#fixedExpensesList').innerHTML='';};
 
 qs('#refresh').onclick=loadAll;
