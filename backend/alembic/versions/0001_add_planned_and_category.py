@@ -1,4 +1,9 @@
-"""add planned and category_id to transactions"""
+"""add planned and category_id to transactions
+
+Revision ID: 0001
+Revises:
+Create Date: 2026-06-02
+"""
 from alembic import op
 import sqlalchemy as sa
 
@@ -14,9 +19,7 @@ def upgrade():
     if 'planned' not in cols:
         op.add_column('transactions', sa.Column('planned', sa.Boolean(), nullable=False, server_default='false'))
     if 'category_id' not in cols:
-        op.add_column('transactions', sa.Column('category_id', sa.Integer(), nullable=True))
-        op.create_foreign_key('fk_tx_category', 'transactions', 'categories', ['category_id'], ['id'])
-    # ensure categories table exists (for fresh installs it already does via create_all)
+        op.add_column('transactions', sa.Column('category_id', sa.Integer(), sa.ForeignKey('categories.id'), nullable=True))
 
 def downgrade():
     op.drop_column('transactions', 'planned')
