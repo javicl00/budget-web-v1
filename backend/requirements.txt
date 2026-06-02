@@ -1,0 +1,7 @@
+fastapi>=0.111
+uvicorn[standard]
+sqlalchemy>=2.0
+psycopg[binary]
+alembic
+python-multipart
+pydantic[email]
