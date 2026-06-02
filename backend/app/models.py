@@ -31,6 +31,7 @@ class Transaction(Base, Timestamped):
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
     source: Mapped[str] = mapped_column(String(50), default="manual")
     imported: Mapped[bool] = mapped_column(Boolean, default=False)
+    planned: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
 
 class Rule(Base, Timestamped):
     __tablename__ = "rules"
