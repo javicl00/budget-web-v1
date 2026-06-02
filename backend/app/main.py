@@ -8,7 +8,7 @@ from datetime import date
 import csv, io, hashlib
 
 Base.metadata.create_all(bind=engine)
-app = FastAPI(title="Budget Web API", version="0.4.0")
+app = FastAPI(title="Budget Web API", version="0.5.0")
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 def get_db():
@@ -80,7 +80,6 @@ def list_transactions(month: str | None = None, include_planned: bool = True, db
 def create_transaction(payload: schemas.TxCreate, db: Session = Depends(get_db), user=Depends(get_current_user)):
     today = date.today()
     tx_date = payload.tx_date if isinstance(payload.tx_date, date) else date.fromisoformat(str(payload.tx_date))
-    # Si es planificado y la fecha ya llegó, se hace efectivo automáticamente
     planned = payload.planned if payload.planned is not None else False
     if planned and tx_date <= today:
         planned = False
@@ -92,7 +91,6 @@ def create_transaction(payload: schemas.TxCreate, db: Session = Depends(get_db),
 
 @app.post("/api/transactions/confirm-planned")
 def confirm_planned(db: Session = Depends(get_db), user=Depends(get_current_user)):
-    """Hace efectivos todos los movimientos planificados cuya fecha ya llegó."""
     today = date.today()
     pending = db.query(models.Transaction).filter(
         models.Transaction.user_id == user.id,
@@ -196,17 +194,35 @@ def budget_breakdown(month: str, db: Session = Depends(get_db), user=Depends(get
             items.append({"category": it.category_name, "budget": float(it.amount), "spent": float(spent_map.get(it.category_name, 0)), "delta": float(it.amount) - float(spent_map.get(it.category_name, 0))})
     return {"month": month, "items": items}
 
-# ── PLANNER ──────────────────────────────────────────────────
+# ── PLANNER (50/30/20 + historical weights) ──────────────────
 @app.post("/api/planner")
 def plan_month(payload: schemas.PlannerRequest, db: Session = Depends(get_db), user=Depends(get_current_user)):
     """
-    Dado un ingreso esperado y los gastos fijos del mes anterior (o definidos),
-    calcula cuánto puede destinarse a cada categoría variable.
+    Estrategia 50/30/20 ajustada con historial real:
+      - 50% necesidades (gastos fijos recurrentes: alquiler, suministros, transporte, alimentación…)
+      - 30% deseos (ocio, restaurantes, ropa, viajes…)
+      - 20% ahorro/deuda (objetivo definido por el usuario)
+
+    Dentro de cada bloque se distribuye proporcionalmente al gasto histórico
+    de los últimos 3 meses. Si no hay historial, se reparte a partes iguales.
     """
-    # Gastos fijos: media de los últimos 3 meses por categoría (solo movimientos efectivos)
-    from datetime import date as dt, timedelta
+    from datetime import date as dt
+
+    # ── 1. Objetivo de ahorro (20% por defecto si no se especifica) ──────────
+    income = payload.expected_income
+    savings_goal = payload.savings_goal if payload.savings_goal > 0 else round(income * 0.20, 2)
+    remaining_after_savings = income - savings_goal
+
+    # ── 2. Bloque de necesidades: 50% del ingreso neto tras ahorro ───────────
+    #    (o hasta el 62.5% del restante, que equivale al 50% del total)
+    needs_budget = round(income * 0.50, 2)
+    wants_budget = round(income * 0.30, 2)
+    # Ajuste: si needs_budget + wants_budget > remaining, recortar wants
+    if needs_budget + wants_budget > remaining_after_savings:
+        wants_budget = max(0, remaining_after_savings - needs_budget)
+
+    # ── 3. Historial últimos 3 meses por categoría ───────────────────────────
     today = dt.today()
-    # Últimos 3 meses de historial
     months_back = []
     for i in range(1, 4):
         m = today.month - i
@@ -215,7 +231,20 @@ def plan_month(payload: schemas.PlannerRequest, db: Session = Depends(get_db), u
             m += 12; y -= 1
         months_back.append(f"{y}-{m:02d}")
 
-    fixed_categories: dict[str, float] = {}
+    # Categorías con tipo asignado en el historial
+    NEEDS_KEYWORDS = {"alquiler", "hipoteca", "suministros", "agua", "luz", "gas",
+                      "internet", "telefono", "telefóno", "transporte", "alimentacion",
+                      "alimentación", "supermercado", "seguros", "seguro", "salud",
+                      "farmacia", "medico", "médico", "educacion", "educación"}
+    WANTS_KEYWORDS = {"ocio", "restaurante", "restaurantes", "ropa", "viaje", "viajes",
+                      "suscripcion", "suscripción", "deporte", "gym", "gimnasio",
+                      "cine", "musica", "música", "juegos", "vacaciones", "bar", "cafeteria",
+                      "cafetería", "regalo", "regalos", "belleza", "estetica", "estética"}
+
+    hist_needs: dict[str, float] = {}
+    hist_wants: dict[str, float] = {}
+    hist_other: dict[str, float] = {}
+
     for mon in months_back:
         y2, m2 = map(int, mon.split("-"))
         s = dt(y2, m2, 1)
@@ -228,41 +257,78 @@ def plan_month(payload: schemas.PlannerRequest, db: Session = Depends(get_db), u
             models.Transaction.tx_date < e
         ).all()
         for t in txs:
-            cat = db.query(models.Category).filter_by(id=t.category_id).first()
-            name = cat.name if cat else "Sin categoría"
-            fixed_categories[name] = fixed_categories.get(name, 0) + float(t.amount)
+            cat_obj = db.query(models.Category).filter_by(id=t.category_id).first()
+            name = (cat_obj.name if cat_obj else "Sin categoría").strip().lower()
+            amt = float(t.amount)
+            if any(k in name for k in NEEDS_KEYWORDS):
+                hist_needs[name] = hist_needs.get(name, 0) + amt
+            elif any(k in name for k in WANTS_KEYWORDS):
+                hist_wants[name] = hist_wants.get(name, 0) + amt
+            else:
+                hist_other[name] = hist_other.get(name, 0) + amt
 
-    # Media mensual por categoría
-    avg_by_cat = {k: round(v / len(months_back), 2) for k, v in fixed_categories.items()}
-
-    # Añadir gastos fijos manuales del payload
+    # Añadir gastos fijos manuales del payload → van a needs
     for fc in payload.fixed_expenses:
-        avg_by_cat[fc.category] = avg_by_cat.get(fc.category, 0) + fc.amount
+        k = fc.category.strip().lower()
+        hist_needs[k] = hist_needs.get(k, 0) + fc.amount * len(months_back)
 
-    total_fixed = sum(avg_by_cat.values())
-    available = payload.expected_income - total_fixed - payload.savings_goal
-    available = max(available, 0)
+    # Media mensual
+    avg_needs = {k: round(v / len(months_back), 2) for k, v in hist_needs.items()}
+    avg_wants = {k: round(v / len(months_back), 2) for k, v in hist_wants.items()}
+    avg_other = {k: round(v / len(months_back), 2) for k, v in hist_other.items()}
 
-    # Distribuir el disponible entre categorías variables según pesos históricos
-    variable_cats = payload.variable_categories if payload.variable_categories else []
-    if not variable_cats:
-        # Si no especifica, sugerir categorías de gasto que no sean fijas
-        all_cats = db.query(models.Category).filter_by(type="expense").all()
-        variable_cats = [c.name for c in all_cats if c.name not in avg_by_cat]
+    # ── 4. Distribuir cada bloque proporcionalmente al historial ─────────────
+    def distribute(budget: float, hist: dict[str, float], extra_cats: list[str]) -> list[dict]:
+        """Distribuye 'budget' entre categorías usando pesos históricos.
+           Las categorías sin historial reciben el peso mínimo (media del resto / 2)."""
+        all_cats = list(hist.keys()) + [c for c in extra_cats if c not in hist]
+        if not all_cats:
+            return []
+        total_hist = sum(hist.values()) or 1
+        # Peso mínimo para categorías sin historial
+        min_weight = (total_hist / len(hist)) * 0.5 if hist else 1.0
+        weights = {c: hist.get(c, min_weight) for c in all_cats}
+        total_w = sum(weights.values())
+        return [
+            {"category": c.title(), "suggested": round(budget * weights[c] / total_w, 2),
+             "pct": round(weights[c] / total_w * 100, 1)}
+            for c in sorted(all_cats, key=lambda x: -weights[x])
+        ]
 
-    per_variable = round(available / len(variable_cats), 2) if variable_cats else 0
+    extra_needs = [c for c in (payload.variable_categories or []) if c.lower() not in avg_wants and c.lower() not in avg_other]
+    extra_wants = [c for c in (payload.variable_categories or []) if c.lower() not in avg_needs]
 
+    needs_items = distribute(needs_budget, avg_needs, extra_needs)
+    wants_items = distribute(wants_budget, avg_wants, extra_wants)
+    # "other" se asigna proporcionalmente dentro del bloque wants si no está clasificado
+    for item in distribute(wants_budget, avg_other, []):
+        # Evitar duplicados
+        if not any(i["category"].lower() == item["category"].lower() for i in wants_items):
+            wants_items.append(item)
+
+    # Recalcular porcentajes de pantalla con base en income
     result_items = []
-    for cat, amt in sorted(avg_by_cat.items(), key=lambda x: -x[1]):
-        result_items.append({"category": cat, "suggested": amt, "type": "fixed", "source": "histórico"})
-    for cat in variable_cats:
-        result_items.append({"category": cat, "suggested": per_variable, "type": "variable", "source": "distribuido"})
+    for it in needs_items:
+        result_items.append({**it, "block": "needs", "block_label": "Necesidades (50%)",
+                              "pct_of_income": round(it["suggested"] / income * 100, 1)})
+    for it in wants_items:
+        result_items.append({**it, "block": "wants", "block_label": "Deseos (30%)",
+                              "pct_of_income": round(it["suggested"] / income * 100, 1)})
+
+    total_needs_real = sum(i["suggested"] for i in needs_items)
+    total_wants_real = sum(i["suggested"] for i in wants_items)
 
     return {
-        "expected_income": payload.expected_income,
-        "savings_goal": payload.savings_goal,
-        "total_fixed": round(total_fixed, 2),
-        "available_for_variable": round(available, 2),
+        "expected_income": income,
+        "savings_goal": savings_goal,
+        "savings_pct": round(savings_goal / income * 100, 1),
+        "needs_budget": needs_budget,
+        "wants_budget": wants_budget,
+        "needs_pct": round(needs_budget / income * 100, 1),
+        "wants_pct": round(wants_budget / income * 100, 1),
+        "total_needs_suggested": round(total_needs_real, 2),
+        "total_wants_suggested": round(total_wants_real, 2),
+        "has_history": bool(hist_needs or hist_wants or hist_other),
         "items": result_items
     }
 
